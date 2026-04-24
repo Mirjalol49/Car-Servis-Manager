@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  RECEPTIONIST
+  MASTER
+}
+
+enum JobStatus {
+  WAITING
+  DIAGNOSED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  DELIVERED
+}
+
+enum PhotoType {
+  BEFORE
+  AFTER
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     Role
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cars      Car[]
+}
+
+model Car {
+  id             String     @id @default(cuid())
+  plateNumber    String     @unique
+  plateImageUrl  String
+  attachmentUrl  String?
+  attachmentType String?    // "image" or "pdf"
+  customerId     String
+  customer       Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  jobOrders      JobOrder[]
+  createdAt      DateTime   @default(now())
+}
+
+model JobOrder {
+  id                 String     @id @default(cuid())
+  carId              String
+  car                Car        @relation(fields: [carId], references: [id], onDelete: Cascade)
+  masterId           String?
+  master             Master?    @relation(fields: [masterId], references: [id], onDelete: SetNull)
+  status             JobStatus  @default(WAITING)
+  problemDescription String
+  diagnosisNotes     String?
+  estimatedCost      Decimal?   @db.Decimal(10, 2)
+  serviceFee         Decimal    @default(0) @db.Decimal(10, 2)
+  totalCost          Decimal?   @db.Decimal(10, 2)
+  approvedByCustomer Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  photos             JobPhoto[]
+  parts              JobPart[]
+  invoice            Invoice?
+}
+
+model JobPhoto {
+  id         String    @id @default(cuid())
+  jobOrderId String
+  jobOrder   JobOrder  @relation(fields: [jobOrderId], references: [id], onDelete: Cascade)
+  url        String
+  type       PhotoType
+  createdAt  DateTime  @default(now())
+}
+
+model Part {
+  id         String    @id @default(cuid())
+  name       String
+  stockQty   Int       @default(0)
+  unitPrice  Decimal   @db.Decimal(10, 2)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  jobParts   JobPart[]
+}
+
+model JobPart {
+  id         String   @id @default(cuid())
+  jobOrderId String
+  jobOrder   JobOrder @relation(fields: [jobOrderId], references: [id], onDelete: Cascade)
+  partId     String
+  part       Part     @relation(fields: [partId], references: [id], onDelete: Restrict)
+  quantity   Int
+  unitPrice  Decimal  @db.Decimal(10, 2) // snapshot price at time of use
+}
+
+model Master {
+  id             String     @id @default(cuid())
+  name           String
+  phone          String
+  specialization String?
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  jobOrders      JobOrder[]
+}
+
+model Invoice {
+  id            String    @id @default(cuid())
+  jobOrderId    String    @unique
+  jobOrder      JobOrder  @relation(fields: [jobOrderId], references: [id], onDelete: Cascade)
+  partsTotal    Decimal   @db.Decimal(10, 2)
+  serviceFee    Decimal   @db.Decimal(10, 2)
+  totalAmount   Decimal   @db.Decimal(10, 2)
+  isPaid        Boolean   @default(false)
+  paymentMethod String?
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+}
