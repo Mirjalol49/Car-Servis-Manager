@@ -1,3 +1,4 @@
+import React from "react"
 import { NextRequest, NextResponse } from "next/server"
 import { renderToBuffer } from "@react-pdf/renderer"
 import prisma from "@/lib/prisma"
@@ -36,7 +37,7 @@ export async function GET(
     const currencySymbol = getCurrencySymbol()
 
     const pdfBuffer = await renderToBuffer(
-      <InvoiceDocument invoice={invoiceWithNumber} currencySymbol={currencySymbol} />
+      React.createElement(InvoiceDocument, { invoice: invoiceWithNumber, currencySymbol })
     )
 
     const invoiceIdFormatted = count.toString().padStart(4, '0')
