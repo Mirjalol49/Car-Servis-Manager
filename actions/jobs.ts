@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma"
 import { uploadFile, deleteFile } from "@/lib/upload"
 import { JobStatus, PhotoType } from "@prisma/client"
 import { z } from "zod"
+import { recalculateJobCosts } from "./jobParts"
 
 const BUCKET_NAME = "car-service-files"
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -190,8 +191,6 @@ export async function addDiagnosis(id: string, data: { diagnosisNotes: string, m
     return { error: "Failed to add diagnosis" }
   }
 }
-
-import { recalculateJobCosts } from "./jobParts"
 
 export async function updateServiceFee(id: string, fee: number) {
   try {
