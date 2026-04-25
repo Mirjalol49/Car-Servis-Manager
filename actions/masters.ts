@@ -85,7 +85,7 @@ export async function createMaster(data: MasterFormValues) {
     return { success: true, data: master }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: error.errors[0].message }
+      return { error: error.issues[0].message }
     }
     console.error("Error creating master:", error)
     return { error: "Failed to create master" }
@@ -117,7 +117,7 @@ export async function updateMaster(id: string, data: MasterFormValues) {
     return { success: true, data: master }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: error.errors[0].message }
+      return { error: error.issues[0].message }
     }
     console.error("Error updating master:", error)
     return { error: "Failed to update master" }

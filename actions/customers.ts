@@ -90,7 +90,7 @@ export async function createCustomer(data: CustomerFormValues) {
     return { success: true, data: customer }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: error.errors[0].message }
+      return { error: error.issues[0].message }
     }
     console.error("Error creating customer:", error)
     return { error: "Failed to create customer" }
@@ -120,7 +120,7 @@ export async function updateCustomer(id: string, data: CustomerFormValues) {
     return { success: true, data: customer }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { error: error.errors[0].message }
+      return { error: error.issues[0].message }
     }
     console.error("Error updating customer:", error)
     return { error: "Failed to update customer" }
