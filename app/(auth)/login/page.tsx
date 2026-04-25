@@ -21,9 +21,8 @@ import { Button } from "@/components/ui/button"
 
 const loginSchema = z.object({
   email: z
-    .string({ error: "Email is required." })
-    .min(1, "Email is required.")
-    .email("Please enter a valid email address."),
+    .string({ error: "Username is required." })
+    .min(1, "Username is required."),
   password: z
     .string({ error: "Password is required." })
     .min(1, "Password is required."),
@@ -99,12 +98,12 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Phone / Email</Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="admin@autoservis.com"
-                autoComplete="email"
+                type="text"
+                placeholder="937489141"
+                autoComplete="username"
                 disabled={isLoading}
                 {...register("email")}
               />
