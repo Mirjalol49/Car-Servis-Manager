@@ -19,14 +19,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
-// Zod v4: use invalid_type_error to override the "received undefined" message
 const loginSchema = z.object({
   email: z
-    .string({ invalid_type_error: "Email is required." })
+    .string({ error: "Email is required." })
     .min(1, "Email is required.")
     .email("Please enter a valid email address."),
   password: z
-    .string({ invalid_type_error: "Password is required." })
+    .string({ error: "Password is required." })
     .min(1, "Password is required."),
 })
 
@@ -44,6 +43,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: "onChange",
     defaultValues: {
       email: "",
       password: "",
